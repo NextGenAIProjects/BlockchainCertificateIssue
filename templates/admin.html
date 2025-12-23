@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Issue Certificate</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Issue New Certificate</h1>
+            <p>Write to Blockchain Ledger</p>
+        </header>
+
+        <main class="card">
+            <div class="input-group">
+                <label>Certificate ID</label>
+                <input type="text" id="newCertId" placeholder="e.g. CERT-2025-99">
+                
+                <label>Student Name</label>
+                <input type="text" id="newName" placeholder="Full Name">
+                
+                <label>Course Name</label>
+                <input type="text" id="newCourse" placeholder="e.g. Computer Science">
+                
+                <button id="issueBtn" onclick="handleIssue()">Issue to Blockchain</button>
+            </div>
+            <p><a href="/">← Back to Verification Portal</a></p>
+        </main>
+    </div>
+
+    <script>
+        async function handleIssue() {
+            const data = {
+                cert_id: document.getElementById('newCertId').value,
+                name: document.getElementById('newName').value,
+                course: document.getElementById('newCourse').value
+            };
+
+            const btn = document.getElementById('issueBtn');
+            btn.innerText = "Mining Transaction...";
+            btn.disabled = true;
+
+            const response = await fetch('/api/issue', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const resData = await response.json();
+            if(response.ok) {
+                alert("Success! Transaction Hash: " + resData.tx_hash);
+                window.location.href = "/"; // Go verify it!
+            } else {
+                alert("Error: " + resData.message);
+            }
+            btn.disabled = false;
+            btn.innerText = "Issue to Blockchain";
+        }
+    </script>
+</body>
+</html>
